@@ -1,0 +1,6 @@
+__pycache__/
+*.log
+reports/*.html
+reports/*.csv
+.env
+logs/
