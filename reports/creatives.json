@@ -1,0 +1,43 @@
+{
+  "analysis": "The provided low-performing creatives suggest a focus on visual storytelling, product showcase, and lifestyle storytelling. The campaigns are primarily focused on promoting specific products or collections, with common keywords including 'Men', 'Bold Colors', 'ComfortMax', 'Soft', 'Athletic Briefs', 'Trunks', 'Briefs', and 'Boxers'.",
+  "new_creatives": {
+    "headlines": [
+      "Unleash Your Inner Boldness",
+      "Elevate Your Style with ComfortMax",
+      "Get Ready to Sweat in Soft Athletic Briefs",
+      "The Ultimate Trunk for the Modern Man",
+      "Say Goodbye to Boxed-In Thinking"
+    ],
+    "primary_text": [
+      "Experience the power of bold colors and statement pieces",
+      "Discover the comfort and confidence that comes with ComfortMax",
+      "Upgrade your athletic wear game with our Soft Athletic Briefs",
+      "Find the perfect trunk for your unique style",
+      "Break free from the ordinary with our innovative Boxers"
+    ],
+    "hooks": [
+      "Get ready to turn heads with our bold new collection!",
+      "Unlock the secret to comfortable fashion with ComfortMax",
+      "Take your workout to the next level with Soft Athletic Briefs",
+      "Find your perfect match with our Trunks and Boxers",
+      "Join the revolution against boring underwear"
+    ],
+    "ctas": [
+      "Shop Now",
+      "Learn More",
+      "Get Started Today",
+      "Discover Your New Favorite Trunk",
+      "Experience ComfortMax for Yourself"
+    ],
+    "offer_angles": [
+      {
+        "name": "Product Showcase",
+        "description": "Highlight unique features and benefits of individual products from the 'Men Bold Colors Drop' campaign."
+      },
+      {
+        "name": "Lifestyle Storytelling",
+        "description": "Develop video ads that tell stories about men's lifestyles, incorporating your products as solutions to everyday problems or challenges."
+      }
+    ]
+  }
+}

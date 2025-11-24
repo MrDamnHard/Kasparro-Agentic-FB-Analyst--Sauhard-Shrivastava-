@@ -1,0 +1,69 @@
+# ===============================
+# Kasparro Agentic FB Analyst
+# Configuration File
+# Author: Sauhard Shrivastava
+# ===============================
+
+# -------------------------------
+# DATA SETTINGS
+# -------------------------------
+
+data_path: "data/raw_dataset.csv"          # Path to your Facebook Ads dataset
+date_column: "date"                        # Timestamp field for time-series metrics
+
+# -------------------------------
+# METRIC THRESHOLDS
+# -------------------------------
+
+low_ctr_threshold: 0.01                    # CTR below 1% → creative considered weak
+significant_ctr_drop: 0.15                 # 15% drop → InsightAgent flags
+significant_cpc_increase: 0.10             # 10% increase → cost pressure indication
+significant_roas_drop: 0.20                # 20% ROAS drop → performance issue
+
+# -------------------------------
+# LLM SETTINGS
+# -------------------------------
+
+llm:
+  model: "llama3"                           # Model used in ollama
+  temperature: 0.2                          # Stable generation for analytics
+  max_tokens: 2048                          # Prevents runaway generation
+  top_p: 0.9                                 # Diversity control
+  json_enforce: true                        # Always reconstruct output into JSON
+
+# -------------------------------
+# REPORT SETTINGS
+# -------------------------------
+
+report:
+  include_insights: true
+  include_creatives: true
+  include_recommendations: true
+  show_confidence_scores: true
+  auto_append_timestamp: true
+
+# -------------------------------
+# LOGGING SETTINGS
+# -------------------------------
+
+logging:
+  enabled: true
+  file_path: "logs/agent_runs.jsonl"
+  log_each_agent: true
+  log_llm_raw_output: false                # Disable to avoid huge logs
+  log_json_after_repair: true
+
+# -------------------------------
+# REPRODUCIBILITY
+# -------------------------------
+
+seed: 42                                    # For reproducible sampling
+
+# -------------------------------
+# SYSTEM OPTIONS
+# -------------------------------
+
+strict_json_mode: true                      # Forces JSON cleaning layer
+run_creative_agent: true                    # Toggle creative generation
+run_recommendation_agent: true              # Toggle strategy recommendations
+

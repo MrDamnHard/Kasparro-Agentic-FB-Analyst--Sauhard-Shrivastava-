@@ -1,0 +1,21 @@
+{
+  "validated_hypotheses": [],
+  "rejected_hypotheses": [
+    {
+      "reason": "The increase in ROAS (5.64%) is primarily due to a decrease in CPC (17.7%), which indicates that the ads are becoming more effective at driving conversions.",
+      "evidence": "Decrease in CPC, small increase in CTR",
+      "llm_confidence": 0.8,
+      "quant_confidence": 0.25,
+      "final_confidence": 0.53,
+      "validated": false
+    },
+    {
+      "reason": "The increase in ROAS (5.64%) might be partially attributed to a small increase in CTR (0.0009%), suggesting that the ads are still resonating with the target audience.",
+      "evidence": "Small increase in CTR, decrease in conversion rate",
+      "llm_confidence": 0.6,
+      "quant_confidence": 0.33,
+      "final_confidence": 0.47,
+      "validated": false
+    }
+  ]
+}

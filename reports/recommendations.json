@@ -1,0 +1,24 @@
+{
+  "recommendations": [
+    {
+      "action": "Optimize ad targeting to reach a more relevant audience",
+      "reason": "The small increase in CTR (0.0009%) suggests that the ads are still resonating with the target audience, indicating potential for further optimization"
+    },
+    {
+      "action": "Leverage lookalike audiences to expand reach and drive conversions",
+      "reason": "The decrease in CPC (17.7%) indicates that the ads are becoming more effective at driving conversions, suggesting potential for scaling up targeting"
+    },
+    {
+      "action": "Conduct A/B testing on ad creative to identify top-performing assets",
+      "reason": "The increase in ROAS (5.64%) is primarily due to a decrease in CPC, which could be further optimized through creative experimentation"
+    },
+    {
+      "action": "Monitor and adjust bidding strategies to optimize for conversions",
+      "reason": "The decrease in conversion rate (-0.000781) may indicate that the ads are becoming less effective at driving conversions, suggesting potential for adjusting bidding strategies"
+    },
+    {
+      "action": "Consider implementing a retargeting campaign to re-engage users who have abandoned the funnel",
+      "reason": "The small increase in CTR and decrease in conversion rate suggest that there may be opportunities to re-engage users who have dropped off in the funnel"
+    }
+  ]
+}
