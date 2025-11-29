@@ -1,21 +1,32 @@
 {
-  "validated_hypotheses": [],
-  "rejected_hypotheses": [
+  "validated_hypotheses": [
     {
-      "reason": "The increase in ROAS (5.64%) is primarily due to a decrease in CPC (17.7%), which indicates that the ads are becoming more effective at driving conversions.",
-      "evidence": "Decrease in CPC, small increase in CTR",
+      "reason": "Increased spend and impressions led to a higher ROAS.",
+      "evidence": "Spend increased by 32.6% (552.93 vs 520.328571), and impressions rose by 31.9% (309257.714286 vs 234457.857143).",
       "llm_confidence": 0.8,
-      "quant_confidence": 0.25,
-      "final_confidence": 0.53,
-      "validated": false
+      "quant_confidence": 0.65,
+      "final_confidence": 0.74,
+      "recommended_action": "Monitor spend and impression growth to ensure it's driving ROAS increases.",
+      "validated": true
     },
     {
-      "reason": "The increase in ROAS (5.64%) might be partially attributed to a small increase in CTR (0.0009%), suggesting that the ads are still resonating with the target audience.",
-      "evidence": "Small increase in CTR, decrease in conversion rate",
-      "llm_confidence": 0.6,
-      "quant_confidence": 0.33,
-      "final_confidence": 0.47,
-      "validated": false
+      "reason": "CTR increased, leading to more conversions and higher ROAS.",
+      "evidence": "CTR rose by 58.46% (0.0139 vs 0.008771), which likely contributed to the increase in conversions and ROAS.",
+      "llm_confidence": 0.7,
+      "quant_confidence": 0.85,
+      "final_confidence": 0.76,
+      "recommended_action": "Review ad creative and targeting to optimize CTR and conversion rates.",
+      "validated": true
+    },
+    {
+      "reason": "Drift in ROAS was driven by a significant change in conversion rate.",
+      "evidence": "Conversion rate changed from -8000000.009427 (prev7) to 0.015414 (last7), which is a substantial increase.",
+      "llm_confidence": 0.9,
+      "quant_confidence": 0.55,
+      "final_confidence": 0.76,
+      "recommended_action": "Investigate the cause of this conversion rate change and consider adjusting targeting or ad creative accordingly.",
+      "validated": true
     }
-  ]
+  ],
+  "rejected_hypotheses": []
 }

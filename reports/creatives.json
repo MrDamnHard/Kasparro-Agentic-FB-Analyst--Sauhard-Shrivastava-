@@ -1,42 +1,42 @@
 {
-  "analysis": "The provided low-performing creatives suggest a focus on visual storytelling, product showcase, and lifestyle storytelling. The campaigns are primarily focused on promoting specific products or collections, with common keywords including 'Men', 'Bold Colors', 'ComfortMax', 'Soft', 'Athletic Briefs', 'Trunks', 'Briefs', and 'Boxers'.",
+  "analysis": "By analyzing common themes and patterns across existing campaigns, we can identify opportunities to improve low-performing creatives. Key takeaways include emphasizing product focus, comfort, quality, limited-time offers, and summer-themed content.",
   "new_creatives": {
     "headlines": [
-      "Unleash Your Inner Boldness",
-      "Elevate Your Style with ComfortMax",
-      "Get Ready to Sweat in Soft Athletic Briefs",
-      "The Ultimate Trunk for the Modern Man",
-      "Say Goodbye to Boxed-In Thinking"
+      "Find Your Fit",
+      "Summer Essentials Unlocked",
+      "Comfort Challenge Accepted",
+      "Quality Matters Most",
+      "Mystery Box Delivered"
     ],
     "primary_text": [
-      "Experience the power of bold colors and statement pieces",
-      "Discover the comfort and confidence that comes with ComfortMax",
-      "Upgrade your athletic wear game with our Soft Athletic Briefs",
-      "Find the perfect trunk for your unique style",
-      "Break free from the ordinary with our innovative Boxers"
+      "Discover the perfect fit for your body and style",
+      "Get ready for summer with our curated essentials bundle",
+      "Join the comfort challenge and share your favorite moments",
+      "Experience the value of high-quality materials and craftsmanship",
+      "Unbox a surprise selection of products tailored to your preferences"
     ],
     "hooks": [
-      "Get ready to turn heads with our bold new collection!",
-      "Unlock the secret to comfortable fashion with ComfortMax",
-      "Take your workout to the next level with Soft Athletic Briefs",
-      "Find your perfect match with our Trunks and Boxers",
-      "Join the revolution against boring underwear"
+      "What's your perfect fit?",
+      "Unlock the secrets of summer with our essentials bundle",
+      "Get comfortable, get social!",
+      "Quality that speaks for itself",
+      "Surprise yourself with our mystery box subscription"
     ],
     "ctas": [
-      "Shop Now",
-      "Learn More",
-      "Get Started Today",
-      "Discover Your New Favorite Trunk",
-      "Experience ComfortMax for Yourself"
+      "Shop Now and Find Your Fit",
+      "Limited Time Offer: Get Your Essentials Bundle",
+      "Join the Comfort Challenge Today",
+      "Experience Quality for Yourself",
+      "Subscribe to Our Mystery Box Service"
     ],
     "offer_angles": [
       {
-        "name": "Product Showcase",
-        "description": "Highlight unique features and benefits of individual products from the 'Men Bold Colors Drop' campaign."
+        "name": "Find Your Fit",
+        "description": "Emphasize the importance of finding the perfect fit for your body and style"
       },
       {
-        "name": "Lifestyle Storytelling",
-        "description": "Develop video ads that tell stories about men's lifestyles, incorporating your products as solutions to everyday problems or challenges."
+        "name": "Summer Essentials Unlocked",
+        "description": "Highlight a curated selection of summer-themed products at a limited-time discount"
       }
     ]
   }

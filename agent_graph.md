@@ -1,41 +1,58 @@
-🧠 Kasparro Agentic FB Analyst — Agent Graph & Data Flow
-🎯 Overview
+agent_graph.md — Kasparro Agentic Facebook Ads Analyst Architecture
 
-This document explains the agent architecture, data flow, and reasoning structure of the Kasparro Agentic Facebook Performance Analyst.
+Author: Sauhard Shrivastava
+Project: kasparro-agentic-fb-analyst-sauhard-shrivastava
 
-The system is built with autonomous components (“agents”) that interact to diagnose Facebook Ads performance and generate optimized creative strategies.
+🧠 High-Level Multi-Agent Architecture
+                         ┌──────────────────────────────┐
+                         │          User Query           │
+                         └───────────────┬───────────────┘
+                                         │
+                                         ▼
+                             ┌────────────────────────┐
+                             │     Planner Agent      │
+                             │  (task decomposition)  │
+                             └────────────┬───────────┘
+                                          │ plan
+                                          ▼
+       ┌───────────────────────────────────────────────────────────────┐
+       │                        Data Agent                              │
+       │  load_data → schema check → preprocess → metrics → drift        │
+       │  get_summary_metrics → get_low_ctr_creatives                   │
+       └──────────────────────────────┬────────────────────────────────┘
+                                      ▼
+                           ┌─────────────────────────┐
+                           │     Insight Agent       │
+                           │     (LLM hypotheses)    │
+                           └──────────────┬──────────┘
+                                          │ raw insights (JSON)
+                                          ▼
+                          ┌────────────────────────────────┐
+                          │        Evaluator Agent         │
+                          │  quantitative validation +     │
+                          │  blended confidence scoring    │
+                          └──────────────┬─────────────────┘
+                                         ▼
+                          ┌────────────────────────────────┐
+                          │        Creative Agent          │
+                          │  (LLM creative generation)     │
+                          │    json-safe via 2-pass LLM    │
+                          └──────────────┬─────────────────┘
+                                         ▼
+                          ┌────────────────────────────────┐
+                          │     Report Generator (run.py)   │
+                          │ insights.json + creatives.json  │
+                          │        → final report.md        │
+                          └─────────────────────────────────┘
 
-📊 Agent Graph (Mermaid Diagram)
-flowchart TD
+🗂 Agent Responsibilities (Detailed)
+1️⃣ Planner Agent
 
-    A[User Query] --> B[Planner Agent]
+Reads the user query (“Analyze ROAS drop”)
 
-    B --> C[Data Agent]
+Identifies the metric to analyze
 
-    C --> D[Insight Agent]
-
-    D --> E[Evaluator Agent]
-
-    E --> F[Recommendation Agent]
-
-    C --> G[Creative Agent]
-
-    E --> F
-    F --> H[Final Report Generator]
-    G --> H
-
-🔍 Agent Responsibilities
-1. Planner Agent
-
-Parses the user query
-
-Produces a structured task plan
-
-Ensures downstream agents know what to do
-
-Converts natural language → step-by-step agent workflow
-
-Example output:
+Produces a simple ordered task plan:
 
 [
   {"task": "load_data"},
@@ -45,154 +62,239 @@ Example output:
   {"task": "generate_recommendations"}
 ]
 
-2. Data Agent
 
-Loads & cleans the CSV dataset
+LLM not used here (simple rule-based logic)
 
-Computes last 7 vs previous 7 day summaries
+2️⃣ Data Agent
 
-Extracts low CTR creatives
+Core responsibilities:
 
-Creates data foundation for insights
+Load CSV and normalize schema
+
+Validate schema against REQUIRED_COLUMNS
+
+Compute derived metrics:
+
+CPC
+
+Conversion Rate
+
+Compute last 7 days vs previous 7 days
+
+Drift detection using:
+
+Z-scores
+
+Percent change
+
+Severity classification (low / moderate / high)
+
+Extract low-CTR creatives
+
+Features added for production reliability:
+
+Safe NA filling
+
+Division-by-zero guards (EPS = 1e-6)
+
+ERROR logs on missing columns
+
+Runtime logs for all methods
+
+3️⃣ Insight Agent (LLM)
+
+Input: Metric summary + drift signals.
+Output:
+
+{
+  "hypotheses": [
+    {
+      "reason": "...",
+      "evidence": "...",
+      "confidence": 0.83,
+      "recommended_action": "..."
+    }
+  ]
+}
+
+
+Why LangChain + Ollama?
+
+.with_retry() gives exponential backoff
+
+Ensures robustness when LLM server is slow or fails
+
+JSON Safety Pipeline:
+
+Ask LLM for JSON
+
+Try json.loads
+
+Try extracting { ... } substring
+
+Fallback hypothesis if still invalid
+
+Nothing crashes the pipeline.
+
+Logs:
+
+hypothesis count
+
+raw parse failures
+
+runtime
+
+4️⃣ Evaluator Agent
+
+This agent combines:
+
+ROAS / CTR / CPC / CVR deltas
+
+Drift z-scores
+
+Spend & impression relationships
+
+Hypothesis keywords (“CTR”, “fatigue”, “conversion”)
 
 Produces:
 
-Time-series metrics
+numeric confidence (0–1)
 
-Aggregated KPIs
+final blended confidence
 
-Creative-level performance
-
-3. Insight Agent (LLM-based)
-
-Takes numeric summary from Data Agent
-
-Generates hypotheses explaining ROAS changes
-
-Structured JSON output with confidence scores
-
-Uses chain-of-thought internally but outputs clean JSON
+validated vs rejected hypotheses
 
 Example:
 
 {
-  "reason": "CTR drop reduced efficiency.",
-  "evidence": "CTR -23%, conversions -14%.",
-  "confidence": 0.81
+  "reason": "...",
+  "llm_confidence": 0.8,
+  "quant_confidence": 0.85,
+  "final_confidence": 0.82,
+  "validated": true
 }
 
-4. Evaluator Agent
 
-Validates Insight Agent hypotheses numerically
+Logs:
 
-Adjusts confidence based on thresholds
+runtime for entire validation
 
-Ensures insights are reliable and not hallucinated
+numeric scoring time per hypothesis
 
-Checks:
+number of validated/rejected
 
-CTR % delta
+5️⃣ Creative Agent (LLM)
 
-CPC delta
+Receives low-CTR creatives (< threshold).
+Two-step process ensures valid JSON:
 
-CVR delta
+Pass 1: Ask model to generate creative ideas
+Pass 2: Ask model to convert output into strict JSON schema
 
-Impression/spend shifts
+If even that fails → inject safe empty structure.
 
-ROAS change magnitude
+Final Output:
 
-5. Recommendation Agent (LLM-based)
+{
+  "analysis": "...",
+  "new_creatives": {
+    "headlines": [...],
+    "primary_text": [...],
+    "hooks": [...],
+    "ctas": [...],
+    "offer_angles": [...]
+  }
+}
 
-Converts metrics + insights → strategic actions
+🔄 End-to-End Data Flow
+raw_dataset.csv
+    │
+    ▼
+DataAgent → {metrics, deltas, drift, low_ctr_creatives}
+    │
+    ▼
+InsightAgent (LLM)
+    → hypotheses.json
+    │
+    ▼
+EvaluatorAgent
+    → validated_hypotheses.json
+    │
+    ▼
+CreativeAgent (LLM)
+    → creatives.json
+    │
+    ▼
+ReportGenerator (run.py)
+    → report.md
 
-Marketing-focused output
+🔐 Error Handling & Retry Flow
+LLM Errors
 
-Produces 5–8 actionable steps
+If LLM fails:
 
-Examples:
+retried 3 times with exponential backoff
 
-“Introduce 2 new creatives to counter fatigue”
+logged with ERROR log level
 
-“Increase budget on high-ROAS adsets”
+fallback safe JSON returned
 
-“Expand 2% lookalike audience”
+Schema Errors
 
-6. Creative Agent (LLM + JSON Repair Layer)
+If dataset is missing columns:
 
-Analyzes low-performing creatives
+ERROR logged
 
-Generates:
+DataAgent returns None
 
-Headlines
+Orchestrator handles gracefully
 
-Primary text
+JSON Parse Errors
 
-Hooks
+InsightAgent and CreativeAgent:
 
-CTAs
+substring extraction → fallback JSON
 
-Offer angles
+pipeline never crashes
 
-Uses 2-pass generation:
+📜 Observability Layer
 
-Creative free text (LLM freedom)
+Every agent logs via AgentLogger to:
 
-Strict JSON reconstruction (no hallucination)
+logs/agent_runs.jsonl
 
-Ensures stable output even if LLM drifts.
 
-7. Final Report Generator
+Each log line includes:
 
-Combines:
+{
+  "timestamp": "2025-11-29T14:32:41Z",
+  "run_id": "5b9a844f-2fbe-4e93-9fa8-381e33caa8fa",
+  "level": "INFO",
+  "agent": "DataAgent.detect_drift",
+  "runtime_ms": 3.12,
+  "input": {"last7_n": 7},
+  "output": {"spend": {...}, "ctr": {...}}
+}
 
-Validated hypotheses
+📄 Final Outputs
 
-Creative recommendations
+Generated inside /reports:
 
-Strategic recommendations
+File	Description
+insights.json	Validated + rejected hypotheses
+creatives.json	Structured creative ideas
+report.md	Final marketer-friendly report
+🎯 Summary
 
-Outputs a marketing-ready Markdown file:
+This system fulfills all Kasparro assignment requirements:
 
-reports/report.md
-
-🔁 Data Flow Summary
-
-User Query → Planner Agent
-
-Planner → Data Agent
-
-Metrics → Insight Agent
-
-Hypotheses → Evaluator Agent
-
-Validated → Recommendation Agent
-
-Low CTR creatives → Creative Agent
-
-Everything → Final Report
-
-This produces a highly structured, explainable, and marketer-friendly analysis.
-
-🧩 Why This Architecture?
-
-Separates LLM reasoning from numerical logic
-
-Reduces hallucinations with evaluator agent
-
-Enables creative and analytical thinking simultaneously
-
-Fully reproducible across datasets
-
-Follows Kasparro’s assignment structure precisely
-
-Highly extensible (memory, iterations, dashboards)
-
-📦 Files Produced
-
-insights.json – hypotheses + confidence
-
-creatives.json – creative concepts
-
-recommendations.json – next-step strategies
-
-report.md – final report
+✔ Multi-agent architecture
+✔ LLM reasoning with JSON safety
+✔ Retry + backoff
+✔ Full observability
+✔ Schema validation
+✔ Drift detection
+✔ Hypothesis validation
+✔ Creative generation
+✔ Final report generation
+✔ Reproducible CLI pipeline

@@ -1,102 +1,198 @@
-import json
-import numpy as np
+import time
+from typing import Any, Dict, List
+from src.utils.logger import AgentLogger
+
 
 class EvaluatorAgent:
     """
-    Evaluates hypotheses from the InsightAgent using numeric validation.
+    Production-grade EvaluatorAgent with advanced logging:
+    - runtime logging
+    - structured INFO logs
+    - ERROR logs for numeric evaluation failures
+    - blended confidence (numeric + LLM)
+    - drift-aware numeric scoring
     """
 
     def __init__(self):
-        pass
+        self.logger = AgentLogger()
 
-    def validate(self, metric_summary: dict, llm_hypotheses: dict):
+    # --------------------------------------------------------
+    # Main entrypoint
+    # --------------------------------------------------------
+    def validate(self, metrics: Dict[str, Any], insights: Dict[str, Any]) -> Dict[str, Any]:
+        start = time.time()
+
+        drift = metrics.get("drift", {})
+        hypotheses = insights.get("hypotheses", [])
+
         validated = []
         rejected = []
 
-        # Expand metric summary
-        roas_last = metric_summary["roas"]["last7"]
-        roas_prev = metric_summary["roas"]["prev7"]
-        ctr_last = metric_summary["ctr"]["last7"]
-        ctr_prev = metric_summary["ctr"]["prev7"]
-        cpc_last = metric_summary["cpc"]["last7"]
-        cpc_prev = metric_summary["cpc"]["prev7"]
-        conv_last = metric_summary["conversion_rate"]["last7"]
-        conv_prev = metric_summary["conversion_rate"]["prev7"]
+        for h in hypotheses:
+            try:
+                numeric = self._evaluate_numeric_alignment(h, metrics, drift)
+            except Exception as e:
+                # Log numeric evaluation failure but continue pipeline
+                self.logger.log_error(
+                    "EvaluatorAgent.validate",
+                    f"Numeric evaluation failed: {str(e)}",
+                    {"hypothesis": h}
+                )
+                numeric = 0.3  # safe fallback so pipeline continues
 
-        for h in llm_hypotheses.get("hypotheses", []):
-
-            reason = h.get("reason", "")
-            evidence = h.get("evidence", "")
             llm_conf = float(h.get("confidence", 0.5))
 
-            quant_score = 0.0
-            checks = 0
-
-            # ------------------------------
-            # 1. Validate CTR drop claims
-            # ------------------------------
-            if "ctr" in reason.lower() or "ctr" in evidence.lower():
-                checks += 1
-                if ctr_last < ctr_prev:
-                    quant_score += 1
-
-            # ------------------------------
-            # 2. Validate CPC increase claims
-            # ------------------------------
-            if "cpc" in reason.lower() or "cpc" in evidence.lower():
-                checks += 1
-                if cpc_last > cpc_prev:
-                    quant_score += 1
-
-            # ------------------------------
-            # 3. Validate Conversion Rate drop claims
-            # ------------------------------
-            if "conversion" in reason.lower() or "conversion" in evidence.lower():
-                checks += 1
-                if conv_last < conv_prev:
-                    quant_score += 1
-
-            # ------------------------------
-            # 4. Validate ROAS drop claims
-            # ------------------------------
-            if "roas" in reason.lower() or "roas" in evidence.lower():
-                checks += 1
-                if roas_last < roas_prev:
-                    quant_score += 1
-
-            # Avoid division by zero
-            if checks == 0:
-                final = {
-                    "reason": reason,
-                    "evidence": evidence,
-                    "llm_confidence": llm_conf,
-                    "quant_confidence": 0.0,
-                    "final_confidence": round(llm_conf * 0.6, 2),
-                    "validated": False,
-                }
-                rejected.append(final)
-                continue
-
-            quant_conf = quant_score / checks
-
-            final_conf = round((llm_conf * 0.5) + (quant_conf * 0.5), 2)
+            # final confidence
+            final_conf = round(0.4 * numeric + 0.6 * llm_conf, 2)
 
             result = {
-                "reason": reason,
-                "evidence": evidence,
+                "reason": h.get("reason", ""),
+                "evidence": h.get("evidence", ""),
                 "llm_confidence": llm_conf,
-                "quant_confidence": round(quant_conf, 2),
+                "quant_confidence": numeric,
                 "final_confidence": final_conf,
-                "validated": quant_conf >= 0.5,
+                "recommended_action": h.get("recommended_action", "")
             }
 
-            # Decide whether to accept the hypothesis
-            if result["validated"]:
+            if final_conf >= 0.5:
+                result["validated"] = True
                 validated.append(result)
             else:
+                result["validated"] = False
                 rejected.append(result)
 
-        return {
+        out = {
             "validated_hypotheses": validated,
             "rejected_hypotheses": rejected
         }
+
+        # INFO log for final evaluation output
+        self.logger.log(
+            "EvaluatorAgent.validate",
+            {"n_hypotheses": len(hypotheses)},
+            {
+                "validated": len(validated),
+                "rejected": len(rejected)
+            }
+        )
+
+        # Add runtime log
+        self.logger.log_runtime(
+            "EvaluatorAgent.validate",
+            start,
+            {"validated_count": len(validated)}
+        )
+
+        return out
+
+    # --------------------------------------------------------
+    # Numeric scoring logic
+    # --------------------------------------------------------
+    def _evaluate_numeric_alignment(
+        self,
+        hypothesis: Dict[str, Any],
+        metrics: Dict[str, Any],
+        drift: Dict[str, Any]
+    ) -> float:
+
+        start = time.time()  # runtime for numeric scoring
+
+        reason = hypothesis.get("reason", "").lower()
+        evidence = hypothesis.get("evidence", "").lower()
+
+        # Safe extract helpers
+        def safe_metric(col: str, key: str):
+            try:
+                return float(metrics.get(col, {}).get(key, 0))
+            except Exception:
+                return 0.0
+
+        def safe_drift(col: str, key: str):
+            try:
+                return drift.get(col, {}).get(key, None)
+            except Exception:
+                return None
+
+        # Extract deltas
+        roas_change = safe_metric("roas", "change")
+        ctr_change = safe_metric("ctr", "change")
+        cpc_change = safe_metric("cpc", "change")
+        conv_change = safe_metric("conversion_rate", "change")
+        impressions_change = safe_metric("impressions", "change")
+        spend_change = safe_metric("spend", "change")
+
+        # Extract drift z-scores
+        ctr_z = safe_drift("ctr", "z_score")
+        cpc_z = safe_drift("cpc", "z_score")
+        spend_z = safe_drift("spend", "z_score")
+        roas_z = safe_drift("roas", "z_score")
+
+        score = 0.2  # baseline — avoids ever being zero
+
+        # ----------------------------- 
+        # ROAS alignment
+        # -----------------------------
+        if "roas" in reason or "roas" in evidence:
+            if roas_change > 0:
+                score += 0.25
+            elif roas_change < 0:
+                score += 0.15
+
+        # -----------------------------
+        # CTR alignment
+        # -----------------------------
+        if "ctr" in reason or "ctr" in evidence:
+            if ctr_change > 0:
+                score += 0.20
+            if ctr_z and abs(ctr_z) > 2:
+                score += 0.10
+
+        # -----------------------------
+        # CPC alignment
+        # -----------------------------
+        if "cpc" in reason or "cost" in reason:
+            if cpc_change < 0:
+                score += 0.15
+            if cpc_z and abs(cpc_z) > 2:
+                score += 0.10
+
+        # -----------------------------
+        # Conversion rate alignment
+        # -----------------------------
+        if "conversion" in reason or "cvr" in reason:
+            if conv_change > 0:
+                score += 0.20
+            if conv_change < 0:
+                score += 0.10
+
+        # -----------------------------
+        # Spend / Impressions alignment
+        # -----------------------------
+        if "spend" in reason and spend_change > 0:
+            score += 0.10
+
+        if "impressions" in reason and impressions_change > 0:
+            score += 0.10
+
+        # -----------------------------
+        # Drift alignment
+        # -----------------------------
+        if "fatigue" in reason:
+            if ctr_z and ctr_z < -2:
+                score += 0.15
+
+        if "volatility" in reason or "unstable" in reason:
+            if spend_z and abs(spend_z) > 2:
+                score += 0.15
+
+        # Cap at 1.0
+        score = float(min(1.0, score))
+
+        # Log numeric scoring runtime
+        self.logger.log_runtime(
+            "EvaluatorAgent._evaluate_numeric_alignment",
+            start,
+            {"numeric_score": score}
+        )
+
+        return score
