@@ -6,7 +6,7 @@ Layout: "Canvas" / Dashboard Style for Senior Engineering Projects
 <!-- HEADER / BANNER -->
 
 <div align="center">
-<img src="https://www.google.com/search?q=https://capsule-render.vercel.app/api%3Ftype%3Dwaving%26color%3D0:2a2a72,100:009ffd%26height%3D220%26section%3Dheader%26text%3DKasparro%2520Agentic%2520Analyst%26fontSize%3D50%26animation%3DfadeIn%26fontAlignY%3D38%26desc%3DProduction-Grade%2520Multi-Agent%2520LLM%2520System%2520for%2520Ad%2520Performance%26descAlignY%3D55%26descAlign%3D50" width="100%" alt="Kasparro Header" />
+<img src="https://capsule-render.vercel.app/api?type=waving&color=0:2a2a72,100:009ffd&height=220&section=header&text=Kasparro%20Agentic%20Analyst&fontSize=50&animation=fadeIn&fontAlignY=38&desc=Production-Grade%20Multi-Agent%20LLM%20System%20for%20Ad%20Performance&descAlignY=55&descAlign=50" width="100%" alt="Kasparro Header" />
 
 <!-- BADGES -->
 
@@ -30,80 +30,156 @@ Right: Engineering Principles (The "High-Bar" Requirements)
 <tr>
 <!-- LEFT COLUMN: ARCHITECTURE (60%) -->
 <td valign="top" width="60%">
-<h2>🧠 System Architecture</h2>
+<h2>🧠 System Architecture & Flow</h2>
 <p>
-<b>Kasparro V2</b> is not an academic prototype; it is a resilient, autonomous loop designed to diagnose ROAS fluctuations, validate hypotheses numerically, and generate upgraded creatives.
+<b>Kasparro V2</b> is a resilient, autonomous loop designed to diagnose ROAS fluctuations, validate hypotheses numerically, and generate actionable strategic and creative outputs.
 </p>
 
-  <h3>Agent Workflow</h3>
-  <!-- MERMAID DIAGRAM -->
-  <pre>
-
+<h3>Agent Workflow</h3>
+<pre>
 
 graph TD
-    Start(User Query) --> Planner[📅 Planner Agent]
-    Planner -->|Task Graph| Data[💾 Data Agent]
-    Data -->|Metrics & Drift| Insight[💡 Insight Agent]
-    Insight -->|Hypothesis| Eval[⚖️ Evaluator Agent]
-    Eval -->|Validated Score| Creative[🎨 Creative Agent]
-    Eval -->|Validated Score| Recs[🚀 Recs Agent]
-    Creative --> Report[📝 Final Report]
-    Recs --> Report
+    Start(User Query) --&gt; Planner[📅 Planner Agent]
+    Planner --&gt;|Task Graph| Data[💾 Data Agent]
+    Data --&gt;|Metrics &amp; Drift| Insight[💡 Insight Agent]
+    Insight --&gt;|Hypothesis| Eval[⚖️ Evaluator Agent]
+    Eval --&gt;|Validated Score| Creative[🎨 Creative Agent]
+    Eval --&gt;|Validated Score| Recs[🚀 Recs Agent]
+    Creative --&gt; Report[📝 Final Report Builder]
+    Recs --&gt; Report
 
 
-  </pre>
-  <blockquote>
-    <i>"The system features self-healing reflection loops. If an LLM outputs malformed JSON, the Insight Agent reflects, repairs, and retries automatically."</i>
-  </blockquote>
+</pre>
+<blockquote>
+<i>"The system features self-healing reflection loops. If an LLM outputs malformed JSON, the Insight Agent attempts auto-repair via reflection, substring extraction, and re-parsing."</i>
+</blockquote>
 </td>
 
 <!-- RIGHT COLUMN: ENGINEERING STANDARDS (40%) -->
+
 <td valign="top" width="40%">
-  <h2>🛡️ Engineering Standards</h2>
-  <p>Implementation of "High-Bar" reliability patterns:</p>
-  
-  <table>
-    <tr>
-      <td width="30">✅</td>
-      <td>
-        <b>Resilience</b><br/>
-        <sub>Exponential backoff + Jitter + Deterministic fallbacks for every agent.</sub>
-      </td>
-    </tr>
-    <tr>
-      <td width="30">👁️</td>
-      <td>
-        <b>Observability</b><br/>
-        <sub>Structured JSONL logs with <code>trace_id</code>, <code>run_id</code>, and <code>execution_id</code>.</sub>
-      </td>
-    </tr>
-    <tr>
-      <td width="30">🔒</td>
-      <td>
-        <b>Schema Governance</b><br/>
-        <sub>Strict Z-score drift detection and Pydantic-style schema validation.</sub>
-      </td>
-    </tr>
-    <tr>
-      <td width="30">⚖️</td>
-      <td>
-        <b>Weighted Scoring</b><br/>
-        <sub>Confidence = <code>0.4 * numeric</code> + <code>0.6 * llm_reasoning</code>.</sub>
-      </td>
-    </tr>
-  </table>
-  
-  <br/>
-  
-  <div align="center">
-    <b>Testing Strategy</b><br/>
-    <img src="https://img.shields.io/badge/Coverage-Core%20Logic-success?style=flat-square" />
-    <img src="https://img.shields.io/badge/Tests-Pytest-blue?style=flat-square" />
-  </div>
+<h2>🛡️ Engineering Standards (High-Bar V2)</h2>
+<p>Implementation of production-grade reliability patterns for LLM systems:</p>
+
+<table>
+<tr>
+<td width="30">✅</td>
+<td>
+<b>Reliability & Resilience</b>
+
+
+
+
+<sub>All external (LLM) or I/O operations are wrapped in a <code>retry_policy</code> with <b>Exponential Backoff + Jitter</b> (Max attempts: 3). Guaranteed non-blocking operation.</sub>
 </td>
-
-
 </tr>
+<tr>
+<td width="30">👁️</td>
+<td>
+<b>Observability & Tracing</b>
+
+
+
+
+<sub>Structured JSONL logging tracks <code>run_id</code> (pipeline trace), <code>trace_id</code> (event), and <code>execution_id</code> (per agent call/retry). Supports real-time monitoring.</sub>
+</td>
+</tr>
+<tr>
+<td width="30">🔒</td>
+<td>
+<b>Schema Governance</b>
+
+
+
+
+<sub>The Data Agent performs initial schema validation (required fields) and Z-score based <b>Drift Detection</b> on core metrics using previous 7-day data.</sub>
+</td>
+</tr>
+<tr>
+<td width="30">⚖️</td>
+<td>
+<b>Validation & Weighted Scoring</b>
+
+
+
+
+<sub>Hypotheses are validated numerically. Final confidence is a weighted score: <code>0.4 * numeric_score + 0.6 * llm_confidence</code>.</sub>
+</td>
+</tr>
+</table>
+
+<div align="center">
+<b>Testing Strategy</b>
+
+
+
+
+<img src="https://img.shields.io/badge/Coverage-Core%20Logic-success?style=flat-square" />
+<img src="https://img.shields.io/badge/Tests-Pytest-blue?style=flat-square" />
+<img src="https://www.google.com/search?q=https://img.shields.io/badge/Drift%2520Logic-Tested-informational%3Fstyle%3Dflat-square" />
+</div>
+</td>
+</tr>
+</table>
+
+<!-- DETAILED AGENT CAPABILITIES TABLE -->
+
+<h2>🤖 Detailed Agent Breakdown</h2>
+<p>Each agent operates with strict I/O contracts and deterministic fallbacks to maintain pipeline stability.</p>
+<table>
+<thead align="center">
+<tr>
+<td width="15%"><b>Agent</b></td>
+<td width="15%"><b>Input</b></td>
+<td width="40%"><b>Core Logic & Functions</b></td>
+<td width="15%"><b>Output</b></td>
+<td width="15%"><b>Fallback Strategy</b></td>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><b>Planner Agent</b></td>
+<td><code>User Query (str)</code></td>
+<td>Parses query intent. Builds a sequential or parallel <b>Task Graph (DAG)</b> to guide execution.</td>
+<td><code>ExecutionTaskGraph (list)</code></td>
+<td>Returns a default, comprehensive 5-step analysis plan.</td>
+</tr>
+<tr>
+<td><b>Data Agent</b></td>
+<td><code>Raw Ads Data (CSV/DB)</code></td>
+<td>1. <b>Schema Validation:</b> Checks for required columns. 2. <b>Derived Metrics:</b> Calculates eCPM, eCPC, etc. 3. <b>Drift Detection:</b> Z-score based statistical anomaly detection.</td>
+<td><code>Metrics_Dict (dict)</code>, <code>Drift_Report (json)</code></td>
+<td>Logs validation error. Returns <code>Metrics_Dict</code> with <code>NULL</code> values; subsequent agents proceed with warnings.</td>
+</tr>
+<tr>
+<td><b>Insight Agent</b></td>
+<td><code>Metrics_Dict</code>, <code>Drift_Report</code></td>
+<td>Uses Llama 3 with structured reasoning prompt to generate 3-5 causal hypotheses. Features <b>LLM Reflection Loop</b> for auto-repairing malformed JSON output.</td>
+<td><code>Hypotheses_List (json)</code></td>
+<td>Fails to Reflection/Repair. On final failure, extracts JSON substring or returns list with <code>confidence: 0.0</code>.</td>
+</tr>
+<tr>
+<td><b>Evaluator Agent</b></td>
+<td><code>Hypotheses_List</code>, <code>Metrics_Dict</code></td>
+<td><b>Numeric Validation:</b> Scores each hypothesis by correlating metric deltas (e.g., if ROAS is down, a hypothesis citing "CTR drop" gets a higher numeric score if CTR also dropped).</td>
+<td><code>Validated_Hypotheses (json)</code></td>
+<td>Logs scoring error. Returns raw hypotheses with <code>final_confidence: 0.0</code>.</td>
+</tr>
+<tr>
+<td><b>Creative Agent</b></td>
+<td><code>Validated_Hypotheses</code></td>
+<td>Generates new copy/visual ideas based on the most confident validated hypothesis (e.g., if "Hook fatigue" is high-confidence, generates new hooks/CTAs).</td>
+<td><code>New_Creatives_JSON (json)</code></td>
+<td>Returns generic, high-performing creative templates based on hardcoded best practices.</td>
+</tr>
+<tr>
+<td><b>Recommendation Agent</b></td>
+<td><code>Validated_Hypotheses</code></td>
+<td>Generates strategic actions (e.g., Scale, Pause, Test) based on the combined output of validation and drift analysis.</td>
+<td><code>Recommendations_List (list)</code></td>
+<td>Returns non-critical advice: "Monitor all core metrics daily."</td>
+</tr>
+</tbody>
 </table>
 
 <!-- TECH STACK SECTION -->
@@ -123,40 +199,50 @@ graph TD
 </tr>
 </table>
 
-<!-- AGENT CAPABILITIES TABLE -->
+<!-- EXAMPLE OUTPUTS -->
 
-<h2>🤖 Agent Capabilities</h2>
-<table>
-<thead align="center">
-<tr>
-<td width="20%"><b>Agent</b></td>
-<td width="50%"><b>Responsibility</b></td>
-<td width="30%"><b>Key Output</b></td>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><b>Data Agent</b></td>
-<td>Ingests raw ads data, validates schema consistency, calculates derived metrics, and detects statistical drift.</td>
-<td><code>drift_report.json</code></td>
-</tr>
-<tr>
-<td><b>Insight Agent</b></td>
-<td>Generates causal hypotheses for performance changes (e.g., "Low CTR caused ROAS drop"). Includes auto-repair reflection.</td>
-<td><code>hypotheses.json</code></td>
-</tr>
-<tr>
-<td><b>Evaluator Agent</b></td>
-<td>Numerically validates hypotheses against data using weighted scoring logic (ROAS/CTR/CPC deltas).</td>
-<td><code>validation_scores</code></td>
-</tr>
-<tr>
-<td><b>Creative Agent</b></td>
-<td>Synthesizes new ad copy, headlines, and hooks based on performance data of underperforming assets.</td>
-<td><code>new_creatives.json</code></td>
-</tr>
-</tbody>
-</table>
+<h2>📊 Example Artifacts</h2>
+<p>The system generates three structured JSON artifacts and one final report Markdown file.</p>
+
+<details>
+<summary><b>Example: <code>reports/insights.json</code></b></summary>
+
+{
+  "validated_hypotheses": [
+    {
+      "reason": "CPC volatility strongly reduced ROAS, despite a steady CVR.",
+      "evidence": "CPC +45% (High Drift) & ROAS -22%",
+      "final_confidence": 0.91,
+      "numeric_score": 0.85
+    },
+    {
+      "reason": "Creative fatigue in Ad Set X caused a mild CTR drop.",
+      "evidence": "Ad Set X CTR -15%",
+      "final_confidence": 0.78,
+      "numeric_score": 0.60
+    }
+  ]
+}
+
+
+</details>
+
+<details>
+<summary><b>Example: <code>reports/creatives.json</code></b></summary>
+
+{
+  "analysis": "Hypothesis: CPC volatility is driven by auction competition. Focus new creatives on high-intent, low-cost audiences.",
+  "new_creatives": {
+    "headlines": ["Stop Overpaying for Leads: Get 3X ROI Now", "The Secret to <Product> Success"],
+    "primary_text": ["Avoid the 4 common mistakes marketers make. Read our guide.", "..."],
+    "hooks": ["Are you wasting 50% of your budget?", "Watch this 60s demo"],
+    "ctas": ["Download Case Study", "Calculate Your ROI"],
+    "offer_angles": ["Urgency: Limited Time Offer", "Value: 100% Money-Back Guarantee"]
+  }
+}
+
+
+</details>
 
 <!-- INSTALLATION & USAGE -->
 
@@ -175,8 +261,8 @@ ollama pull llama3
 
 <b>2. Run Analysis</b>
 
-# Execute the full pipeline
-python run.py "Diagnose ROAS drop for Campaign A"
+# Execute the full pipeline with a specific query
+python run.py "Diagnose ROAS drop for Campaign A in the last 7 days vs previous 7 days"
 
 
 <b>3. Check Outputs</b>
@@ -184,6 +270,7 @@ python run.py "Diagnose ROAS drop for Campaign A"
 # Structured reports generated in /reports
 cat reports/report.md
 cat reports/insights.json
+cat logs/agent_runs.jsonl
 
 
 </td>
